@@ -1,0 +1,24 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        meta(name='description', content='')
+        meta(name='author', content='')
+        link(rel='icon', href='/images/favicon.ico')
+        title #{title} | Express Website
+        link(href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css', rel='stylesheet')
+        script(src='https://code.jquery.com/jquery-3.3.1.min.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js')
+        script(src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js')
+    body
+        nav.navbar.navbar-inverse.navbar-fixed-top.bg-dark
+            .container
+                .navbar-header
+                    p.text-primary.h1 SUPERAPP Version 0.0A
+         
+        block content
+ 
+        footer
+            p &copy; 2018 All Rights Reserved

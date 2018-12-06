@@ -1,0 +1,8 @@
+extends layout
+
+block content
+    .jumbotron
+        .container
+            p.h1= message
+            p.h2= error.status
+            pre.h6 #{error.stack}

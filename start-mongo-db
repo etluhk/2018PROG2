@@ -1,0 +1,2 @@
+mongod --config /usr/local/etc/mongod.conf --profile=1 --slowms=1
+
