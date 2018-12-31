@@ -76,6 +76,24 @@ wsServer.on('request', function(request) {
           connection.sendUTF(JSON.stringify(req));
         });
         break;
+        case "delOne":
+        console.log("Marker "+parsedMessage.data+"will be deleted soon!");
+        Map.findOneAndDelete({'_id': parsedMessage.data}, function(err, deleted) {
+          //if (err) console.log(err);
+          console.log(deleted);
+          //res.json({status: "Done"});
+          var data = {
+            mId: parsedMessage.data,
+            status: "DONE"
+          };
+          var req = {
+            type: 'delOne',
+            date: Date.now(),
+            data: data
+          };
+          connection.sendUTF(JSON.stringify(req));
+        });
+        break;
         default:
         console.log("Got undefined request:");
         console.log(parsedMessage.type);

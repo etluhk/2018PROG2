@@ -18,7 +18,19 @@ function delMarker(markerDbId) {
     var r = confirm("You sure?");
     if (r == true) {
         console.log("Deleting marker "+markerDbId+".");
-        $.getJSON("http://localhost:3000/json", "method=delMarker&id="+markerDbId)
+        if (ioSocketIsOpen) {
+            var req = {
+                type: 'delOne',
+                date: Date.now(),
+                data: markerDbId
+            };
+            console.log(req);
+            ioSocket.send(JSON.stringify(req));
+        } else {
+            console.log("ERROR, unable to add new marker, ioSocket is down.");
+        }
+        
+/*         $.getJSON("http://localhost:3000/json", "method=delMarker&id="+markerDbId)
         .done(function( json ) {
             console.log( "Request successful.");
             
@@ -29,7 +41,7 @@ function delMarker(markerDbId) {
         .fail(function(textStatus, error ) {
             var err = textStatus + ", " + error;
             console.log( "Request Failed: " + err );
-        });
+        }); */
     }  
 }
 function addMarker() {
@@ -44,7 +56,7 @@ function addMarker() {
                 icon: $.grep(document.querySelectorAll('#newMarkerIcon'), function(obj){return obj.checked === true;})[0].value,
                 content: document.querySelectorAll('#newMarkerComment')[0].value
             };
-
+            
             var req = {
                 type: 'addOne',
                 date: Date.now(),
@@ -56,8 +68,8 @@ function addMarker() {
             console.log("ERROR, unable to add new marker, ioSocket is down.");
         }
         
-
-/* 
+        
+        /* 
         $.ajax({
             url: "http://localhost:3000/json",
             method: "POST",
@@ -180,15 +192,23 @@ function initioSocket() {
         reqType = parsedData.type;
         switch(reqType) {
             case "getAll":
-                console.log('Request type: getAll');
-                allMarkers = parsedData.data;
-                var infowindow = new google.maps.InfoWindow();
-                for (i = 0; i < allMarkers.length; i++) {
-                    renderMarker(allMarkers[i], i);
-                }
+            console.log('Request type: getAll');
+            allMarkers = parsedData.data;
+            var infowindow = new google.maps.InfoWindow();
+            for (i = 0; i < allMarkers.length; i++) {
+                renderMarker(allMarkers[i], i);
+            }
             break;
             case "getOne":
-                renderMarker(parsedData.data);
+            renderMarker(parsedData.data);
+            break;
+            case "delOne":
+                if (parsedData.data.status === "DONE") {
+                    var obj = $.grep(markers, function(obj){return obj._id === parsedData.data.mId;})[0];
+                    obj.setMap(null);
+                    markers = $.grep(markers, function(obj){return obj._id === parsedData.data.mId;}, true);
+                }
+            break;
             default:
             console.log(reqType);
         }
