@@ -106,7 +106,7 @@ function pointNewMarker(parentEvent) {
         markers.push(mapsMarker);
     }
     
-    function getAllMarkers() {
+    /*     function getAllMarkers() {
         
         $.getJSON("http://localhost:3000/json", "method=getAllMarkers")
         .done(function( allMarkers ) {
@@ -120,7 +120,7 @@ function pointNewMarker(parentEvent) {
             console.log( "Request Failed: " + err );
         });
         
-    }
+    } */
     
     function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -128,8 +128,9 @@ function pointNewMarker(parentEvent) {
             zoom: 18
         });
         
-        getAllMarkers();
-        
+        //getAllMarkers();
+        initioSocket();
+
         google.maps.event.addListener(map, 'click', function(event){
             pointNewMarker(event);
         });
@@ -144,25 +145,40 @@ function pointNewMarker(parentEvent) {
         
     }
     
-    
-    var ioSocket = new WebSocket("ws://localhost:8080/", "superapp-protocol");
-    
-    ioSocket.onmessage = function (event) {
-        console.log('Data from server:');
-        console.log(JSON.parse(event.data));
-    }
-    ioSocket.onopen = function (event) {
-        // Construct a msg object containing the data the server needs to process the message from the chat client.
-        var req = {
-            type: 'getAll',
-            date: Date.now()
-        };
+    function initioSocket() {
+        var ioSocket = new WebSocket("ws://localhost:8080/", "superapp-protocol");
         
-        // Send the msg object as a JSON-formatted string.
-        ioSocket.send(JSON.stringify(req));
-        //ioSocket.send("Here's some text that the server is urgently awaiting! WaaWaa!"); 
-    };
-    
+        ioSocket.onmessage = function (event) {
+            console.log('Data from server:');
+            console.log(JSON.parse(event.data));
+            parsedData = JSON.parse(event.data);
+            reqType = parsedData.type;
+            switch(reqType) {
+                case "getAll":
+                console.log('Request type: getAll');
+                allMarkers = parsedData.data;
+                var infowindow = new google.maps.InfoWindow();
+                for (i = 0; i < allMarkers.length; i++) {
+                    renderMarker(allMarkers[i], i);
+                }
+                break;
+                default:
+                console.log(reqType);
+            }
+        }
+        ioSocket.onopen = function (event) {
+            var ioSocketIsOpen = true;
+            // Construct a msg object containing the data the server needs to process the message from the chat client.
+            var req = {
+                type: 'getAll',
+                date: Date.now()
+            };
+            
+            // Send the msg object as a JSON-formatted string.
+            ioSocket.send(JSON.stringify(req));
+            //ioSocket.send("Here's some text that the server is urgently awaiting! WaaWaa!"); 
+        };
+    }
     
     
     

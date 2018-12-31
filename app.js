@@ -32,41 +32,46 @@ function originIsAllowed(origin) {
 }
 
 wsServer.on('request', function(request) {
-    if (!originIsAllowed(request.origin)) {
-      // Make sure we only accept requests from an allowed origin
-      request.reject();
-      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
-      return;
+  if (!originIsAllowed(request.origin)) {
+    // Make sure we only accept requests from an allowed origin
+    request.reject();
+    console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
+    return;
+  }
+  
+  var connection = request.accept('superapp-protocol', request.origin);
+  console.log((new Date()) + ' Connection accepted.');
+  connection.on('message', function(message) {
+    if (message.type === 'utf8') {
+      var parsedMessage = JSON.parse(message.utf8Data);
+      if (parsedMessage.type === 'getAll') {
+        console.log('Got GETALL!!!!!!');
+        console.log(parsedMessage);
+        var Map = require('./models/datasets');
+        Map.find({}, function(err, markers) {
+          var req = {
+            type: 'getAll',
+            date: Date.now(),
+            data: markers
+          };
+          //if (err) console.log(err);
+          
+          //console.log(markers);
+          //res.json(markers);
+          connection.sendUTF(JSON.stringify(req));
+        });
+      }
+      console.log('Received Message: ' + message.utf8Data);
+      // connection.sendUTF(message.utf8Data);
     }
-    
-    var connection = request.accept('superapp-protocol', request.origin);
-    console.log((new Date()) + ' Connection accepted.');
-    connection.on('message', function(message) {
-        if (message.type === 'utf8') {
-            var parsedMessage = JSON.parse(message.utf8Data);
-            if (parsedMessage.type === 'getAll') {
-                console.log('Got GETALL!!!!!!');
-                console.log(parsedMessage);
-                var Map = require('./models/datasets');
-                Map.find({}, function(err, markers) {
-                  //if (err) console.log(err);
-            
-                  //console.log(markers);
-                  //res.json(markers);
-                  connection.sendUTF(JSON.stringify(markers));
-               });
-            }
-            console.log('Received Message: ' + message.utf8Data);
-            // connection.sendUTF(message.utf8Data);
-        }
-        else if (message.type === 'binary') {
-            console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
-            connection.sendBytes(message.binaryData);
-        }
-    });
-    connection.on('close', function(reasonCode, description) {
-        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-    });
+    else if (message.type === 'binary') {
+      console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
+      connection.sendBytes(message.binaryData);
+    }
+  });
+  connection.on('close', function(reasonCode, description) {
+    console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+  });
 });
 
 
@@ -118,7 +123,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+  
   // render the error page
   res.status(err.status || 500);
   res.render('error');
