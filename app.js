@@ -38,16 +38,15 @@ wsServer.on('request', function(request) {
     console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
     return;
   }
-  
+  var Map = require('./models/datasets');
   var connection = request.accept('superapp-protocol', request.origin);
   console.log((new Date()) + ' Connection accepted.');
   connection.on('message', function(message) {
     if (message.type === 'utf8') {
       var parsedMessage = JSON.parse(message.utf8Data);
-      if (parsedMessage.type === 'getAll') {
-        console.log('Got GETALL!!!!!!');
+      switch(parsedMessage.type) {
+        case "getAll":
         console.log(parsedMessage);
-        var Map = require('./models/datasets');
         Map.find({}, function(err, markers) {
           var req = {
             type: 'getAll',
@@ -60,7 +59,30 @@ wsServer.on('request', function(request) {
           //res.json(markers);
           connection.sendUTF(JSON.stringify(req));
         });
-      }
+        break;
+        case "addOne":
+        console.log(parsedMessage);
+        console.log("Marker will be added soon!");
+        var marker = new Map(parsedMessage.data);
+        
+        marker.save(function(err) {
+          if (err) console.log(err);
+          //res.json(marker);
+          var req = {
+            type: 'getOne',
+            date: Date.now(),
+            data: marker
+          };
+          connection.sendUTF(JSON.stringify(req));
+        });
+        break;
+        default:
+        console.log("Got undefined request:");
+        console.log(parsedMessage.type);
+      } 
+      
+      
+      
       console.log('Received Message: ' + message.utf8Data);
       // connection.sendUTF(message.utf8Data);
     }
