@@ -145,13 +145,13 @@ function pointNewMarker(parentEvent) {
     }
     
     
-    var exampleSocket = new WebSocket("ws://localhost:8080/", "superapp-protocol");
+    var ioSocket = new WebSocket("ws://localhost:8080/", "superapp-protocol");
     
-    exampleSocket.onmessage = function (event) {
+    ioSocket.onmessage = function (event) {
         console.log('Data from server:');
         console.log(JSON.parse(event.data));
     }
-    exampleSocket.onopen = function (event) {
+    ioSocket.onopen = function (event) {
         // Construct a msg object containing the data the server needs to process the message from the chat client.
         var req = {
             type: 'getAll',
@@ -159,8 +159,8 @@ function pointNewMarker(parentEvent) {
         };
         
         // Send the msg object as a JSON-formatted string.
-        exampleSocket.send(JSON.stringify(req));
-        //exampleSocket.send("Here's some text that the server is urgently awaiting! WaaWaa!"); 
+        ioSocket.send(JSON.stringify(req));
+        //ioSocket.send("Here's some text that the server is urgently awaiting! WaaWaa!"); 
     };
     
     
