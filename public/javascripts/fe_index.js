@@ -29,19 +29,6 @@ function delMarker(markerDbId) {
         } else {
             console.log("ERROR, unable to add new marker, ioSocket is down.");
         }
-        
-/*         $.getJSON("http://localhost:3000/json", "method=delMarker&id="+markerDbId)
-        .done(function( json ) {
-            console.log( "Request successful.");
-            
-            var obj = $.grep(markers, function(obj){return obj._id === markerDbId;})[0];
-            obj.setMap(null);
-            markers = $.grep(markers, function(obj){return obj._id === markerDbId;}, true);
-        })
-        .fail(function(textStatus, error ) {
-            var err = textStatus + ", " + error;
-            console.log( "Request Failed: " + err );
-        }); */
     }  
 }
 function addMarker() {
@@ -67,31 +54,6 @@ function addMarker() {
         } else {
             console.log("ERROR, unable to add new marker, ioSocket is down.");
         }
-        
-        
-        /* 
-        $.ajax({
-            url: "http://localhost:3000/json",
-            method: "POST",
-            data: JSON.stringify({
-                position: {
-                    lat: document.querySelectorAll('#newMarkerLat')[0].value,
-                    lng: document.querySelectorAll('#newMarkerLng')[0].value
-                },
-                name: document.querySelectorAll('#newMarkerName')[0].value,
-                icon: $.grep(document.querySelectorAll('#newMarkerIcon'), function(obj){return obj.checked === true;})[0].value,
-                content: document.querySelectorAll('#newMarkerComment')[0].value
-            }),
-            contentType: "application/json",
-            dataType: "json",
-            success: function(data){
-                renderMarker(data);
-            },
-            error: function(error){
-                console.log("Error:");
-                console.log(error);
-            }
-        }); */
         
         if(typeof temporaryMarker !== 'undefined') {
             temporaryMarker.setMap(null);
@@ -143,29 +105,12 @@ function renderMarker(marker) {
     markers.push(mapsMarker);
 }
 
-/*     function getAllMarkers() {
-    
-    $.getJSON("http://localhost:3000/json", "method=getAllMarkers")
-    .done(function( allMarkers ) {
-        var infowindow = new google.maps.InfoWindow();
-        for (i = 0; i < allMarkers.length; i++) {
-            renderMarker(allMarkers[i], i);
-        }
-    })
-    .fail(function(textStatus, error) {
-        var err = textStatus + ", " + error;
-        console.log( "Request Failed: " + err );
-    });
-    
-} */
-
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: 58.935561, lng: 23.541794 },
         zoom: 18
     });
     
-    //getAllMarkers();
     initioSocket();
     
     google.maps.event.addListener(map, 'click', function(event){

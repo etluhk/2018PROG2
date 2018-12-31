@@ -53,10 +53,6 @@ wsServer.on('request', function(request) {
             date: Date.now(),
             data: markers
           };
-          //if (err) console.log(err);
-          
-          //console.log(markers);
-          //res.json(markers);
           connection.sendUTF(JSON.stringify(req));
         });
         break;
@@ -67,7 +63,6 @@ wsServer.on('request', function(request) {
         
         marker.save(function(err) {
           if (err) console.log(err);
-          //res.json(marker);
           var req = {
             type: 'getOne',
             date: Date.now(),
@@ -79,9 +74,7 @@ wsServer.on('request', function(request) {
         case "delOne":
         console.log("Marker "+parsedMessage.data+"will be deleted soon!");
         Map.findOneAndDelete({'_id': parsedMessage.data}, function(err, deleted) {
-          //if (err) console.log(err);
           console.log(deleted);
-          //res.json({status: "Done"});
           var data = {
             mId: parsedMessage.data,
             status: "DONE"
@@ -98,11 +91,7 @@ wsServer.on('request', function(request) {
         console.log("Got undefined request:");
         console.log(parsedMessage.type);
       } 
-      
-      
-      
       console.log('Received Message: ' + message.utf8Data);
-      // connection.sendUTF(message.utf8Data);
     }
     else if (message.type === 'binary') {
       console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
