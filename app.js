@@ -71,6 +71,23 @@ wsServer.on('request', function(request) {
           connection.sendUTF(JSON.stringify(req));
         });
         break;
+        case "moveOne":
+        console.log('Got moveOne for id:');
+        console.log(parsedMessage.data.id);
+        Map.findOneAndUpdate({'_id': parsedMessage.data.id}, {'position': parsedMessage.data.position}, function(err, updated) {
+          console.log(updated);
+          var data = {
+            mId: parsedMessage.data.id,
+            status: "DONE"
+          };
+          var req = {
+            type: 'moveOne',
+            date: Date.now(),
+            data: data
+          };
+          connection.sendUTF(JSON.stringify(req));
+        });
+        break;
         case "delOne":
         console.log("Marker "+parsedMessage.data+"will be deleted soon!");
         Map.findOneAndDelete({'_id': parsedMessage.data}, function(err, deleted) {

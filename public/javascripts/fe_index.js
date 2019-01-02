@@ -114,6 +114,7 @@ function pointNewMarker(parentEvent) {
             openinfowindow.close();
         }
         obj.infoWindow.open(map, obj);
+        openinfowindow = obj.infoWindow;
     } else {
         temporaryMarker = new google.maps.Marker({
             position: parentEvent.latLng,
@@ -195,6 +196,15 @@ function initioSocket() {
             break;
             case "getOne":
             renderMarker(parsedData.data);
+            break;
+            case "moveOne":
+            console.log('Got moveOne back from server:');
+            console.log(parsedData.data);
+            moveOldMarker = false;
+            moveOldMarkerId = '';
+            if(typeof openinfowindow !== 'undefined') { 
+                openinfowindow.close();
+            }
             break;
             case "delOne":
             if (parsedData.data.status === "DONE") {
