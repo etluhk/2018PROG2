@@ -21,3 +21,4 @@ Suvalisse kohta kaardil vajutades on võimalik soovikorral antud kohta marker sa
 Markerile saab infona määrata nime, kirjelduse ja ikooni tüübi.
 Lisatud markerit on võimalus liigutada vajutades markeri peale ning avanenud aknas vajutada "move".
 Samuti on võimalik ka markerit kustutada, valides samas aknas nupp "delete". 
+
